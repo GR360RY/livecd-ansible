@@ -1,0 +1,5 @@
+*.ks
+*.iso
+.vagrant
+auto_gen_ansible_hosts*
+cache

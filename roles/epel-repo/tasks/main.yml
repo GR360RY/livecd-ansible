@@ -1,0 +1,5 @@
+- name: Make sure EPEL repo is available
+  copy: src=etc_yum.repos.d_epel.repo dest=/etc/yum.repos.d/epel.repo
+
+- name: Verify existence of RPM-GPG-KEY-EPEL-6
+  copy: src=etc_pki_rpm-gpg_RPM-GPG-KEY-EPEL-6 dest=/etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6

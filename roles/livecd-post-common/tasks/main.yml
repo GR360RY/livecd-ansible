@@ -1,0 +1,39 @@
+- name: Creating the livesys init script
+  template: src=etc_rc.d_init.d_livesys.j2 dest=/etc/rc.d/init.d/livesys owner=root group=root mode=0755
+
+- name: Creating the livesys-late init script
+  template: src=etc_rc.d_init.d_livesys-late.j2 dest=/etc/rc.d/init.d/livesys-late owner=root group=root mode=0755
+
+- name: Add livesys services to startup
+  service: name=$item enabled=yes
+  with_items:
+    - livesys
+    - livesys-late
+
+- name: Clean up RPM database
+  file: path=$item state=absent 
+  with_fileglob: /var/lib/rpm/__db*
+
+- name: Clean up initrd files
+  file: path=$item state=absent 
+  with_fileglob: /boot/initrd*
+
+- name: Clean up initramfs files
+  file: path=$item state=absent 
+  with_fileglob: /boot/initramfs*
+
+- name: Clean up core files
+  file: path=$item state=absent 
+  with_fileglob: /core*
+
+- name: Disable readahead
+  file: path=/.readahead_collect state=absent
+
+# Newer servers come with 10Gbit interfaces on board. Make sure 10gbit Intel driver (ixgbe) is loaded before 1Gbit driver (igb).
+# This will insure that first two physical 10Gbit NICs will be detected as eth0 and eth1
+# TODO: The same procedure should be repited for 10Gbit Broadcom cards.
+- name: Load 10Gbit interfaces first on boot
+  template: src=etc_modprobe.d_netorder.conf.j2 dest=/etc/modprobe.d/netorder.conf owner=root group=root
+
+- name: Add LINKDELAY for eth0 interface
+  lineinfile: dest=/etc/sysconfig/network-scripts/ifcfg-eth0 regexp=^LINKDELAY= line=LINKDELAY=10 state=present insertafter=EOF

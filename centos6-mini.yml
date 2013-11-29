@@ -1,0 +1,24 @@
+- hosts: post
+  connection: chroot
+  sudo: false
+  gather_facts: false
+
+  vars:
+    hostname: centos6-mini
+    livecd_user: centos
+
+  roles:
+    - livecd-pre-common
+    # Add your roles here
+    # - centos-sshd-service
+    - livecd-pxe-common
+    - livecd-post-common
+
+
+- hosts: post-nochroot
+  connection: local
+  sudo: false
+  gather_facts: false
+
+  roles:
+    - livecd-isolinux-common

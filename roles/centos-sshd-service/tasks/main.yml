@@ -1,0 +1,8 @@
+- name: Install sshd service for RedHat Based Systems
+  yum: name={{ item }} state=installed
+  with_items:
+    - openssh-server
+    - openssh-clients
+
+- name: Enable sshd service
+  service: name=sshd enabled=yes

@@ -1,0 +1,16 @@
+# By default LIVE CD configured to run DHCP on interface eth0. 
+# Using hardware box with multiple interfaces and different type NICs will result in the following sitaution:
+# Active interface will be named other then eth0 depending on the load order of kernel modules ( say igb and ixbe ).
+# Hence, when booting from PXE we don't know the inteface name that we are booted from.
+# The following tasks will add startup script that will configure dhcp on pxe interface 
+# 
+- name: Add net-detect-bootif script 
+  template: src=etc_init.d_net-detect-bootif dest=/etc/init.d/net-detect-bootif owner=root group=root mode=0755
+
+- name: Add net-detect-bootif to runlevels 2,3,4,5
+  command: /bin/ln -s /etc/init.d/net-detect-bootif /etc/rc.d/{{ item }}.d/S09net-detect-bootif creates=/etc/rc.d/{{ item }}.d/S09net-detect-bootif
+  with_items:
+    - rc2
+    - rc3
+    - rc4
+    - rc5

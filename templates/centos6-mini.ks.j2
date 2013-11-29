@@ -1,0 +1,55 @@
+lang en_US.UTF-8
+keyboard us
+timezone Asia/Jerusalem
+auth --useshadow --enablemd5
+selinux --disabled
+firewall --disabled
+network --device eth0 --bootproto dhcp
+rootpw livecd
+
+part / --size 4096 --fstype ext4
+services --enabled=network
+
+# Base CentOS 6 repository
+repo --name=a-base    --baseurl=http://mirror.isoc.org.il/pub/centos/6/os/$basearch
+
+# Updates Centos 6 repository
+repo --name=a-updates --baseurl=http://mirror.isoc.org.il/pub/centos/6/updates/$basearch
+
+%packages
+bash
+kernel
+passwd
+chkconfig
+rootfiles
+dhclient
+which
+sudo
+yum
+
+# livecd bits to set up the livecd
+device-mapper-multipath
+
+%end
+
+%post --nochroot
+
+# Fix Issue with ansible chroot transport crashing when PATH variable is not defined
+export PATH=$PATH:/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin
+
+# Fix issue with resolving not working for chroot
+cp /etc/resolv.conf $INSTALL_ROOT/etc/resolv.conf
+
+# Generate inventory file for ansible
+cat > {{ work_dir }}/auto_gen_ansible_hosts-{{ config_name }} << EOF_ansible_hosts
+[post]
+$INSTALL_ROOT
+
+[post-nochroot]
+127.0.0.1 live_root=$LIVE_ROOT
+EOF_ansible_hosts
+
+# Perform postinstallation with ansible
+/usr/bin/ansible-playbook -i {{ work_dir }}/auto_gen_ansible_hosts-{{ config_name }} {{ work_dir }}/{{ config_name }}.yml
+
+%end

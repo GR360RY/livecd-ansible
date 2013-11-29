@@ -1,0 +1,30 @@
+
+default vesamenu.c32
+timeout 100
+
+menu background splash.jpg
+menu title Welcome to centos6-mini!
+menu color border 0 #ffffffff #00000000
+menu color sel 7 #ffffffff #ff000000
+menu color title 0 #ffffffff #00000000
+menu color tabmsg 0 #ffffffff #00000000
+menu color unsel 0 #ffffffff #00000000
+menu color hotsel 0 #ff000000 #ffffffff
+menu color hotkey 7 #ffffffff #ff000000
+menu color timeout_msg 0 #ffffffff #00000000
+menu color timeout 0 #ffffffff #00000000
+menu color cmdline 0 #ffffffff #00000000
+menu hidden
+menu hiddenrow 5
+menu default
+label linux01
+  menu label Boot (Text)
+  kernel vmlinuz0
+  append initrd=initrd0.img root=live:CDLABEL={{ cdlabel.stdout }} rootfstype=auto ro liveimg nodiskmount nolvmmount noswap rd_NO_LUKS rd_NO_MD rd_NO_DM  
+label linux02
+  menu label Boot (Basic Video)
+  kernel vmlinuz0
+  append initrd=initrd0.img root=live:CDLABEL={{ cdlabel.stdout }} rootfstype=auto ro liveimg nodiskmount nolvmmount noswap rhgb vga=791 rd_NO_LUKS rd_NO_MD rd_NO_DM xdriver=vesa nomodeset 
+label local
+  menu label Boot from local drive
+  localboot 0xffff

@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Exit script if not booted from PXE
+/bin/grep -q BOOTIF /proc/cmdline || exit 0
+
+/bin/rm /etc/sysconfig/network-scripts/ifcfg-eth*
+
+BOOTIF_MAC=`awk  -F'BOOTIF' '{print $2}' /proc/cmdline | sed 's/^=01-//' | sed 's/-/:/g' | tr '[a-z]' '[A-Z]'`
+BOOT_INT=`/sbin/ifconfig -a | grep $BOOTIF_MAC | awk '{print $1}'`
+/bin/cat > /etc/sysconfig/network-scripts/ifcfg-$BOOT_INT << EOF_ifcfg
+DEVICE="$BOOT_INT"
+BOOTPROTO="dhcp"
+ONBOOT="yes"
+LINKDELAY=10
+EOF_ifcfg

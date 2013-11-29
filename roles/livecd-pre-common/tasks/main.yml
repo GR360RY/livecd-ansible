@@ -1,0 +1,2 @@
+- name: Overwrite /etc/resolv.conf
+  copy: src=/etc/resolv.conf dest=/etc/resolv.conf owner=root group=root
