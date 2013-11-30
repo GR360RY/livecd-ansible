@@ -1,24 +1,25 @@
 #!/usr/bin/env python
+import argparse
 import os
 import sys
-import argparse
+import yaml
 
 from jinja2 import Environment, FileSystemLoader
 
 cmdargs = str(sys.argv)
+config_file_name=str(sys.argv[1])
 
 template_folder='templates'
 default_template='centos6-mini.ks.j2'
-
-config_file_name=str(sys.argv[1])
 
 script_path, script_filename = os.path.split(os.path.abspath(__file__))
 template_folder=os.path.join(script_path,template_folder)
 
 config_name=os.path.splitext(config_file_name)[0]
 
-# Variable dictionary for jinja2 template
-template_dictionary = {}
+with open(config_file_name) as config_file_name_fh:
+  dataMap = yaml.load(config_file_name_fh)
+  template_dictionary = dataMap[0]['vars']
 
 template_dictionary['work_dir'] = script_path
 template_dictionary['config_name'] = config_name

@@ -4,12 +4,27 @@
   gather_facts: false
 
   vars:
+    cdlabel: centos6-mini
     hostname: centos6-mini
     livecd_user: centos
+    root_password: centos
+
+    # Variables below not used directly in playbook. Used by generate_config.py to create basic kickstart file.
+
+    lang: en_US.UTF-8
+    keyboard: us
+    timezone: Asia/Jerusalem
+
+    repos_list:
+      - { name: 'a-base', baseurl: 'http://mirror.isoc.org.il/pub/centos/6/os/$basearch' }
+      - { name: 'a-updates', baseurl: 'http://mirror.isoc.org.il/pub/centos/6/updates/$basearch' }
+
+    # End of variable block used by generate_config.py
 
   roles:
     - livecd-pre-common
-    # Add your roles here
+    # Add your ansible roles here
+    # - epel-repo
     # - centos-sshd-service
     - livecd-pxe-common
     - livecd-post-common

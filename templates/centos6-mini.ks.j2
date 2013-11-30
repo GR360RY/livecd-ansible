@@ -1,21 +1,18 @@
-lang en_US.UTF-8
-keyboard us
-timezone Asia/Jerusalem
+lang {{ lang }}
+keyboard {{ keyboard }}
+timezone {{ timezone }}
 auth --useshadow --enablemd5
 selinux --disabled
 firewall --disabled
-network --device eth0 --bootproto dhcp
-rootpw livecd
+rootpw {{ root_password }}
 
 part / --size 4096 --fstype ext4
+
+network --device eth0 --bootproto dhcp
 services --enabled=network
 
-# Base CentOS 6 repository
-repo --name=a-base    --baseurl=http://mirror.isoc.org.il/pub/centos/6/os/$basearch
-
-# Updates Centos 6 repository
-repo --name=a-updates --baseurl=http://mirror.isoc.org.il/pub/centos/6/updates/$basearch
-
+{% for repo in repos_list %}repo --name={{ repo.name }} --baseurl={{ repo.baseurl }}
+{% endfor %}
 %packages
 bash
 kernel
