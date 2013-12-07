@@ -3,6 +3,7 @@
   user: vagrant
 
   vars:
+    # Change to your personal ansible repository with your livecd playbooks.
     livecd_ansible_repo: https://github.com/GR360RY/livecd-ansible.git
 
     livecd_ansible_src_path: /opt/livecd-ansible
