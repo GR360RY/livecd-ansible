@@ -1,0 +1,77 @@
+---
+- hosts: all
+  user: vagrant
+
+  vars:
+    livecd_ansible_repo: https://github.com/GR360RY/livecd-ansible.git
+
+    livecd_ansible_src_path: /opt/livecd-ansible
+
+    livecd_label: centos6-mini
+
+    # Upload tasks to tftp and iso server are done in "naive" way: it is expected that livecd-builder server has root ssh keys for both servers.
+
+    #tftp_server: bootserver.example.com
+    #iso_server: isoserver.example.com
+
+    debug_livecd: false
+
+  roles:
+    - livecd-builder-requirements
+
+  tasks:
+
+    - name: Get livecd-ansible repository
+      git: repo={{livecd_ansible_repo}} dest={{ livecd_ansible_src_path }}
+      tags:
+        - host_setup_livecd
+        - debug_livecd
+
+    - name: Generate LiveCD kickstart file
+      command: ./generate_config.py {{ livecd_label }}.yml chdir={{ livecd_ansible_src_path }}
+      tags:
+        - debug_livecd
+
+    - name: Build LiveCD
+      command: /usr/bin/livecd-creator --config={{ livecd_ansible_src_path }}/{{ livecd_label}}.ks --cache={{ livecd_ansible_src_path }}/cache -f {{ livecd_label }} chdir={{ livecd_ansible_src_path }}
+      tags:
+        - build_livecd
+
+    - name: Debug LiveCD
+      command: /usr/bin/screen -dmS livecd-debug -L /usr/bin/livecd-creator -l --config={{ livecd_ansible_src_path }}/{{ livecd_label}}.ks --cache={{ livecd_ansible_src_path }}/cache -f {{ livecd_label }} chdir={{ livecd_ansible_src_path }}
+      when: debug_livecd
+      tags:
+        - debug_livecd
+
+    - name: Create TFP Bootable Files
+      command: /usr/bin/livecd-iso-to-pxeboot {{ livecd_label }}.iso chdir={{ livecd_ansible_src_path }}
+      when: tftp_server
+      tags:
+        - iso_to_pxe
+
+    - name: Upload TFP Files
+      shell: scp tftpboot/vmlinuz0 tftpboot/initrd0.img root@{{ tftp_server }}:{{ item }} chdir={{ livecd_ansible_src_path }}
+      when: tftp_server
+      with_items:
+        - /tftpboot/first/path
+       #- /tftpboot/second/path
+      tags:
+        - upload_to_tftp
+
+    - name: Upload ISO file
+      shell: scp {{ livecd_ansible_src_path }}/{{ livecd_label }}.iso root@{{ iso_server }}:/path/to/iso/folder chdir={{ livecd_ansible_src_path }}
+      when: iso_server
+      tags:
+        - upload_livecd
+
+    - name: Clean Up build directory
+      file: path={{ livecd_ansible_src_path }}/{{ item }} state=absent
+      with_items:
+        - a-base
+        - a-updates
+        - epel
+        - tftpboot
+        - screenlog.0
+        - ansible_hosts
+      tags:
+        - cleanup_livecd

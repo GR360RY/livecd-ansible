@@ -1,0 +1,9 @@
+- name: Install required packages
+  yum: name={{item}} state=latest
+  with_items:
+    - screen
+    - git
+    - ansible
+    - livecd-tools
+  tags:
+    - host_setup_livecd
