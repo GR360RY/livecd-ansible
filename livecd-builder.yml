@@ -75,6 +75,5 @@
         - epel
         - tftpboot
         - screenlog.0
-        - ansible_hosts
       tags:
         - cleanup_livecd
