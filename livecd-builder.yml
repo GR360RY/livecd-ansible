@@ -48,13 +48,13 @@
 
     - name: Create TFP Bootable Files
       command: /usr/bin/livecd-iso-to-pxeboot {{ livecd_label }}.iso chdir={{ livecd_ansible_src_path }}
-      when: tftp_server
+      when: tftp_server is defined
       tags:
         - iso_to_pxe
 
     - name: Upload TFP Files
       shell: scp tftpboot/vmlinuz0 tftpboot/initrd0.img root@{{ tftp_server }}:{{ item }} chdir={{ livecd_ansible_src_path }}
-      when: tftp_server
+      when: tftp_server is defined
       with_items:
         - /tftpboot/first/path
        #- /tftpboot/second/path
@@ -63,7 +63,7 @@
 
     - name: Upload ISO file
       shell: scp {{ livecd_ansible_src_path }}/{{ livecd_label }}.iso root@{{ iso_server }}:/path/to/iso/folder chdir={{ livecd_ansible_src_path }}
-      when: iso_server
+      when: iso_server is defined
       tags:
         - upload_livecd
 
