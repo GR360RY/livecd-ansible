@@ -9,7 +9,9 @@
 
     livecd_label: centos6-mini
 
-    # Upload tasks to tftp and iso server are done in "naive" way: it is expected that livecd-builder server has root ssh keys for both servers.
+    # Upload tasks to tftp and iso server are done in "naive" way.
+    # It is expected that livecd-builder server has root ssh keys for both servers.
+    # Uncomment the below two lines to enable "upload" tasks.
 
     #tftp_server: bootserver.example.com
     #iso_server: isoserver.example.com
