@@ -3,10 +3,15 @@
   user: vagrant
 
   vars:
-    # Change to your personal ansible repository with your livecd playbooks.
-    livecd_ansible_repo: https://github.com/GR360RY/livecd-ansible.git
+    # Change to your personal ansible repository with your livecd playbooks,
+    # if the build should be executed on remote server.
+    #
+    #livecd_ansible_repo: https://github.com/GR360RY/livecd-ansible.git
 
-    livecd_ansible_src_path: /opt/livecd-ansible
+    # Directory to checkout out the source to. Not required when using vagrant as /vagrant directory is already synced.
+    #
+    #livecd_ansible_src_path: /opt/livecd-ansible
+    livecd_ansible_src_path: /vagrant
 
     livecd_label: centos6-mini
 
@@ -26,6 +31,7 @@
 
     - name: Get livecd-ansible repository
       git: repo={{livecd_ansible_repo}} dest={{ livecd_ansible_src_path }}
+      when: livecd_ansible_repo is defined
       tags:
         - host_setup_livecd
         - debug_livecd
