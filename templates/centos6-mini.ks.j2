@@ -6,7 +6,7 @@ selinux --disabled
 firewall --disabled
 rootpw {{ root_password }}
 
-part / --size 4096 --fstype ext4
+part / --size {{ partition_size }} --fstype ext4
 
 network --device eth0 --bootproto dhcp
 services --enabled=network
